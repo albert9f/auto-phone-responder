@@ -4,7 +4,7 @@ An intelligent phone call responder powered by Google Cloud Platform services, b
 
 ## Overview
 
-This project implements an automated phone responder that uses conversational AI to handle incoming phone calls. It integrates Google Cloud Functions, Dialogflow, and Vertex AI (Gemini 1.5 Flash) to provide natural, intelligent responses to callers in real-time.
+This project implements an automated phone responder that uses conversational AI to handle incoming phone calls. It integrates Google Cloud Functions, Dialogflow, and Vertex AI (Gemini 2.5 Flash) to provide natural, intelligent responses to callers in real-time.
 
 ## Architecture
 
@@ -12,7 +12,7 @@ The system consists of the following components:
 
 1. **Dialogflow**: Handles phone call integration and natural language understanding
 2. **Google Cloud Functions**: Serverless HTTP endpoint that processes webhook requests
-3. **Vertex AI (Gemini 1.5 Flash)**: Provides AI-powered conversational responses
+3. **Vertex AI (Gemini 2.5 Flash)**: Provides AI-powered conversational responses
 
 ### Flow Diagram
 
@@ -23,7 +23,7 @@ Incoming Call → Dialogflow → Cloud Function (handle_call) → Vertex AI (Gem
 ## Features
 
 - **Serverless Architecture**: Runs on Google Cloud Functions for automatic scaling
-- **AI-Powered Responses**: Uses Gemini 1.5 Flash for intelligent, contextual responses
+- **AI-Powered Responses**: Uses Gemini 2.5 Flash for intelligent, contextual responses
 - **Dialogflow Integration**: Seamless phone call handling with natural language processing
 - **Logging**: Comprehensive logging for debugging and monitoring
 - **Error Handling**: Graceful error handling with fallback messages
@@ -133,7 +133,7 @@ The main module contains three key functions:
 - **Purpose**: Interface with Vertex AI Gemini model
 - **Input**: User's spoken/text query
 - **Output**: AI-generated response text
-- **Description**: Initializes Vertex AI, sends prompts to Gemini 1.5 Flash, and returns responses
+- **Description**: Initializes Vertex AI, sends prompts to Gemini 2.5 Flash, and returns responses
 
 #### `create_fulfillment_response(response_text)`
 - **Purpose**: Format responses for Dialogflow
@@ -220,7 +220,7 @@ The application uses Python's built-in logging module at INFO level:
    - Check that your service account has proper permissions
 
 3. **No response from Gemini**
-   - Verify your project has access to Gemini 1.5 Flash model
+   - Verify your project has access to Gemini 2.5 Flash model
    - Check quota limits for Vertex AI
 
 ## Contributing

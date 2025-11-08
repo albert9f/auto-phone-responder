@@ -23,7 +23,7 @@ def handle_call(request):
     HTTP Cloud Function entry point for handling Dialogflow webhook requests.
     
     This function receives a JSON request from Dialogflow, extracts the user's
-    spoken text (query_text), sends it to Gemini 1.5 Flash for AI processing,
+    spoken text (query_text), sends it to Gemini 2.5 Flash for AI processing,
     and returns a properly formatted fulfillment response.
     
     Args:
@@ -67,9 +67,9 @@ def handle_call(request):
 
 def call_gemini_api(query_text: str) -> str:
     """
-    Call the Gemini 1.5 Flash model using Vertex AI library.
+    Call the Gemini 2.5 Flash model using Vertex AI library.
     
-    This function sends the user's query text as a prompt to Gemini 1.5 Flash
+    This function sends the user's query text as a prompt to Gemini 2.5 Flash
     and returns the AI-generated text response. This is a non-streaming,
     simple text-in, text-out call.
     
@@ -89,8 +89,8 @@ def call_gemini_api(query_text: str) -> str:
     # Initialize Vertex AI
     vertexai.init(project=project_id, location=location)
     
-    # Initialize Gemini 1.5 Flash model
-    model = GenerativeModel("gemini-1.5-flash")
+    # Initialize Gemini 2.5 Flash model
+    model = GenerativeModel("gemini-2.5-flash")
     
     # Generate response (non-streaming)
     response = model.generate_content(query_text)
