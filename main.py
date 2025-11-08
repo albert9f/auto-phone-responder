@@ -2,12 +2,11 @@
 Conversational AI Phone Responder using Google Cloud Functions.
 
 This module provides the entry point for handling phone calls using
-Vertex AI (Gemini) and Dialogflow for conversational AI capabilities.
+Google AI Studio (Gemini) and Dialogflow for conversational AI capabilities.
 """
 
 import functions_framework
-from vertexai.preview.generative_models import GenerativeModel
-import vertexai
+import google.generativeai as genai
 import json
 import os
 import logging
@@ -67,11 +66,11 @@ def handle_call(request):
 
 def call_gemini_api(query_text: str) -> str:
     """
-    Call the Gemini 2.5 Flash model using Vertex AI library.
+    Call the Gemini 2.5 Flash model using Google AI Studio API.
     
     This function sends the user's query text as a prompt to Gemini 2.5 Flash
     and returns the AI-generated text response. This is a non-streaming,
-    simple text-in, text-out call.
+    simple text-in, text-out call using an API key from Google AI Studio.
     
     Args:
         query_text: The user's spoken/text input to send to Gemini
@@ -79,18 +78,17 @@ def call_gemini_api(query_text: str) -> str:
     Returns:
         AI-generated text response from Gemini
     """
-    # Get configuration from environment variables
-    project_id = os.environ.get("GCP_PROJECT_ID")
-    location = os.environ.get("GCP_LOCATION", "us-central1")
+    # Get API key from environment variable
+    api_key = os.environ.get("GOOGLE_API_KEY")
     
-    if not project_id:
-        raise ValueError("GCP_PROJECT_ID environment variable not set")
+    if not api_key:
+        raise ValueError("GOOGLE_API_KEY environment variable not set")
     
-    # Initialize Vertex AI
-    vertexai.init(project=project_id, location=location)
+    # Configure the Google Generative AI library with the API key
+    genai.configure(api_key=api_key)
     
     # Initialize Gemini 2.5 Flash model
-    model = GenerativeModel("gemini-2.5-flash")
+    model = genai.GenerativeModel("gemini-2.0-flash-exp")
     
     # Generate response (non-streaming)
     response = model.generate_content(query_text)

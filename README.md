@@ -1,10 +1,10 @@
 # Auto Phone Responder
 
-An intelligent phone call responder powered by Google Cloud Platform services, built for Ceuric.
+An intelligent phone call responder powered by Google AI Studio and Google Cloud Platform services, built for Ceuric.
 
 ## Overview
 
-This project implements an automated phone responder that uses conversational AI to handle incoming phone calls. It integrates Google Cloud Functions, Dialogflow, and Vertex AI (Gemini 2.5 Flash) to provide natural, intelligent responses to callers in real-time.
+This project implements an automated phone responder that uses conversational AI to handle incoming phone calls. It integrates Google Cloud Functions, Dialogflow, and Google AI Studio (Gemini 2.0 Flash) to provide natural, intelligent responses to callers in real-time.
 
 ## Architecture
 
@@ -12,30 +12,31 @@ The system consists of the following components:
 
 1. **Dialogflow**: Handles phone call integration and natural language understanding
 2. **Google Cloud Functions**: Serverless HTTP endpoint that processes webhook requests
-3. **Vertex AI (Gemini 2.5 Flash)**: Provides AI-powered conversational responses
+3. **Google AI Studio (Gemini 2.0 Flash)**: Provides AI-powered conversational responses via API key
 
 ### Flow Diagram
 
 ```
-Incoming Call → Dialogflow → Cloud Function (handle_call) → Vertex AI (Gemini) → Response → Dialogflow → Caller
+Incoming Call → Dialogflow → Cloud Function (handle_call) → Google AI Studio (Gemini) → Response → Dialogflow → Caller
 ```
 
 ## Features
 
 - **Serverless Architecture**: Runs on Google Cloud Functions for automatic scaling
-- **AI-Powered Responses**: Uses Gemini 2.5 Flash for intelligent, contextual responses
+- **AI-Powered Responses**: Uses Gemini 2.0 Flash from Google AI Studio for intelligent, contextual responses
 - **Dialogflow Integration**: Seamless phone call handling with natural language processing
+- **Simple API Key Authentication**: No GCP project setup required - just use your Google AI Studio API key
 - **Logging**: Comprehensive logging for debugging and monitoring
 - **Error Handling**: Graceful error handling with fallback messages
 
 ## Prerequisites
 
-- Google Cloud Platform account
+- Google AI Studio API key (get one at https://aistudio.google.com/app/apikey)
+- Google Cloud Platform account (for Cloud Functions and Dialogflow)
 - Python 3.9 or higher
 - Google Cloud CLI (gcloud) installed
 - Access to the following GCP services:
   - Cloud Functions
-  - Vertex AI
   - Dialogflow
 
 ## Installation
@@ -55,12 +56,17 @@ pip install -r requirements.txt
 
 ### 3. Set Up Environment Variables
 
-Set the following environment variables:
+Set the following environment variable:
 
 ```bash
-export GCP_PROJECT_ID="your-project-id"
-export GCP_LOCATION="us-central1"  # Optional, defaults to us-central1
+export GOOGLE_API_KEY="your-google-ai-studio-api-key"
 ```
+
+To get your API key:
+1. Visit https://aistudio.google.com/app/apikey
+2. Sign in with your Google account
+3. Create a new API key
+4. Copy the key and set it as the environment variable
 
 ## Configuration
 
@@ -69,7 +75,6 @@ export GCP_LOCATION="us-central1"  # Optional, defaults to us-central1
 1. **Enable Required APIs**:
    ```bash
    gcloud services enable cloudfunctions.googleapis.com
-   gcloud services enable aiplatform.googleapis.com
    gcloud services enable dialogflow.googleapis.com
    ```
 
@@ -85,7 +90,7 @@ export GCP_LOCATION="us-central1"  # Optional, defaults to us-central1
      --trigger-http \
      --entry-point handle_call \
      --allow-unauthenticated \
-     --set-env-vars GCP_PROJECT_ID=your-project-id,GCP_LOCATION=us-central1
+     --set-env-vars GOOGLE_API_KEY=your-google-ai-studio-api-key
    ```
 
 ## Usage
@@ -99,7 +104,7 @@ For local development and testing:
 pip install functions-framework
 
 # Run the function locally
-export GCP_PROJECT_ID="your-project-id"
+export GOOGLE_API_KEY="your-google-ai-studio-api-key"
 functions-framework --target=handle_call --debug
 ```
 
@@ -130,10 +135,10 @@ The main module contains three key functions:
 - **Description**: Parses incoming requests, extracts user queries, calls Gemini API, and formats responses
 
 #### `call_gemini_api(query_text)`
-- **Purpose**: Interface with Vertex AI Gemini model
+- **Purpose**: Interface with Google AI Studio Gemini model
 - **Input**: User's spoken/text query
 - **Output**: AI-generated response text
-- **Description**: Initializes Vertex AI, sends prompts to Gemini 2.5 Flash, and returns responses
+- **Description**: Configures the Google Generative AI library with API key, sends prompts to Gemini 2.0 Flash, and returns responses
 
 #### `create_fulfillment_response(response_text)`
 - **Purpose**: Format responses for Dialogflow
@@ -175,8 +180,7 @@ The main module contains three key functions:
 
 | Variable | Required | Default | Description |
 |----------|----------|---------|-------------|
-| `GCP_PROJECT_ID` | Yes | - | Your Google Cloud Project ID |
-| `GCP_LOCATION` | No | `us-central1` | GCP region for Vertex AI |
+| `GOOGLE_API_KEY` | Yes | - | Your Google AI Studio API key for Gemini access |
 
 ## Error Handling
 
@@ -185,6 +189,7 @@ The function includes comprehensive error handling:
 - **No JSON data**: Returns 400 error with "Invalid request" message
 - **Missing query_text**: Returns 400 error with "No query_text provided" message
 - **Gemini API errors**: Returns fallback message: "I'm sorry, I'm having trouble processing your request right now."
+- **Missing API key**: Raises ValueError if GOOGLE_API_KEY is not set
 
 ## Logging
 
@@ -197,14 +202,14 @@ The application uses Python's built-in logging module at INFO level:
 ## Dependencies
 
 - `functions-framework==3.5.0` - Google Cloud Functions framework
-- `google-cloud-aiplatform==1.38.1` - Vertex AI client library
+- `google-generativeai==0.8.3` - Google AI Studio client library for Gemini
 - `google-cloud-dialogflow==2.26.0` - Dialogflow client library
 - `flask==3.0.0` - Web framework (required by functions-framework)
 
 ## Security Considerations
 
 - **Authentication**: Consider using `--no-allow-unauthenticated` flag and implement proper authentication
-- **API Keys**: Never commit GCP credentials to version control
+- **API Keys**: Never commit API keys to version control. Use environment variables or secret managers
 - **Rate Limiting**: Implement rate limiting for production use
 - **Input Validation**: Additional validation may be needed for production deployments
 
@@ -212,16 +217,18 @@ The application uses Python's built-in logging module at INFO level:
 
 ### Common Issues
 
-1. **"GCP_PROJECT_ID environment variable not set"**
+1. **"GOOGLE_API_KEY environment variable not set"**
    - Ensure the environment variable is set before deployment/execution
+   - Get your API key from https://aistudio.google.com/app/apikey
 
-2. **Vertex AI initialization fails**
-   - Verify that Vertex AI API is enabled in your project
-   - Check that your service account has proper permissions
+2. **Google AI Studio API errors**
+   - Verify your API key is valid and active
+   - Check that your API key has not exceeded quota limits
+   - Ensure you have access to the Gemini 2.0 Flash model
 
 3. **No response from Gemini**
-   - Verify your project has access to Gemini 2.5 Flash model
-   - Check quota limits for Vertex AI
+   - Verify your API key is correctly configured
+   - Check quota limits for Google AI Studio
 
 ## Contributing
 
