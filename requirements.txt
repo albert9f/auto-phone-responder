@@ -1,0 +1,11 @@
+# Google Cloud Functions framework
+functions-framework==3.5.0
+
+# Vertex AI for Gemini
+google-cloud-aiplatform==1.38.1
+
+# Dialogflow for conversation management
+google-cloud-dialogflow==2.26.0
+
+# Additional dependencies for Cloud Functions
+flask==3.0.0
